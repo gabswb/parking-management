@@ -1,0 +1,72 @@
+NB_PLACE_TOTAL
+NB_PLACE_SUB
+NB_PLACE_NOT_SUB
+
+sem s //semaphore de la section critique
+mutex_sub
+mutex_not_sub
+
+car():
+    if abonné 
+    {
+        P(mutex_sub)
+        if NB_PLACE_SUB >0
+        {
+            P(s)
+            entre par la section critique
+            V(s)
+            NB_PLACE_SUB --
+            V(mutex_sub)
+
+            sleep()
+
+            P(s)
+            sort par section critique
+            V(s)
+
+            P(mutex_sub)
+            NB_PLACE_SUB ++
+            P(mutex_sub)
+
+            return
+        }
+        else
+        {
+            V(mutex_sub)
+        }
+    }
+
+    P(mutex_not_sub)
+    if NB_PLACE_NOT_SUB > 0 {
+        P(s)
+        passer par la section critique
+        V(s)
+        NB_PLACE_NOT_SUB -- 
+        V(mutex_not_sub)
+
+        sleep()
+
+        P(s)
+        sort par section critique
+        V(s)
+
+        P(mutex_not_sub)
+        NB_PLACE_NOT_SUB ++
+        P(mutex_not_sub)
+    }
+    else{
+        V(mutex_not_sub)
+    }  
+
+    return
+
+
+         
+            
+
+            
+
+
+
+
+
