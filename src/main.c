@@ -1,6 +1,8 @@
 #include <stdlib.h>
+#include "car.h"
 
-int main(int argc, int argv**)
+int main(int argc, char** argv)
 {
-    return EXIT_SUCCESS
+    car_t car;
+    return EXIT_SUCCESS;
 }

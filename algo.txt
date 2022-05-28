@@ -25,7 +25,7 @@ car():
             V(s)
 
             P(mutex_sub)
-            NB_PLACE_SUB ++
+            NB_PLACE_SUB ++     
             P(mutex_sub)
 
             return
@@ -61,12 +61,216 @@ car():
     return
 
 
-         
-            
 
-            
+cond_entering;
+cond_leaving;   
+
+n_gateway = 0;
+n_entering = 0;
+n_leaving = 0;
+n_sub_place = 10;
+n_notsub_place = 20;
+
+mutex_gateway;
+mutex_entering;
+mutex_leaving;  
+mutex_sub;
+mutex_notsub;        
+
+void fn_car()
+{
+    if(abonné)
+    {
+        lock(mutex_sub);
+        if(n_sub_place > 0)
+        {
+            unlock(mutex_sub);
+
+            lock(mutex_entering);
+            n_entering++;
+            unlock(mutex_entering);
+
+            lock(mutex_gateway);
+            if(n_gateway > 0) //while() ?
+            { 
+                wait(cond_entering, mutex_gateway);
+            }
+
+            n_gateway++;
+            sleep(2) //time in gateway ...
+            n_gateway--;
+
+            unlock(mutex_gateway);
+
+            lock(mutex_sub);
+            n_sub_place--;
+            unlock(mutex_sub);
+
+            lock(mutex_entering);
+            n_entering--;
+            unlock(mutex_entering);
+
+            lock(mutex_leaving);
+            lock(mutex_entering);
+            if(n_leaving > 0)//priority to leaving cars
+            {
+                signal(cond_leaving);
+                unlock(mutex_entering);
+                unlock(mutex_leaving);
+            }
+            else if(n_entering > 0)
+            {
+                signal(cond_entering);
+                unlock(mutex_entering);
+                unlock(mutex_leaving);      
+            }
 
 
+            //--------------------------------
+            sleep(10) // stay park ...
+            //--------------------------------
+
+
+            lock(mutex_leaving);
+            n_leaving++;
+            unlock(mutex_leaving);
+
+            lock(mutex_gateway);
+            if(n_gateway > 0) //while() ?
+            { 
+                wait(cond_entering, mutex_gateway);
+            }
+
+            n_gateway++;
+            sleep(2) //time in gateway ...
+            n_gateway--;
+
+            unlock(mutex_gateway);
+
+            lock(mutex_leaving);
+            n_leaving--;
+            unlock(mutex_leaving);
+
+            lock(mutex_sub);
+            n_sub_place++;
+            unlock(mutex_sub);
+
+            lock(mutex_leaving);
+            lock(mutex_entering);
+            if(n_leaving > 0)//priority to leaving cars
+            {
+                signal(cond_leaving);
+                unlock(mutex_entering);
+                unlock(mutex_leaving);
+            }
+            else if(n_entering > 0)
+            {
+                signal(cond_entering);
+                unlock(mutex_entering);
+                unlock(mutex_leaving);      
+            }
+        }
+        
+        return;
+    }
+
+
+
+
+    //places non abonnées
+
+    lock(mutex_notsub);
+    if(n_notsub_place > 0)
+    {
+        unlock(mutex_notsub);
+
+        lock(mutex_entering);
+        n_entering++;
+        unlock(mutex_leaving);
+
+        lock(mutex_gateway):
+        if(n_gateway > 0)
+        {
+            wait(cond_entering, mutex_gateway);
+        }
+        
+        n_gateway++;
+        sleep(2) //time in gateway ...
+        n_gateway--;
+
+        unlock(mutex_gateway);
+
+        lock(mutex_notsub);
+        n_notsub_place--;
+        unlock(mutex_notsub);
+
+        lock(mutex_entering);
+        n_entering++;
+        unlock(mutex_entering);
+
+        lock(mutex_leaving);
+        lock(mutex_entering);
+        if(n_leaving > 0)//priority to leaving cars
+        {
+            signal(cond_leaving);
+            unlock(mutex_entering);
+            unlock(mutex_leaving);
+        }
+        else if(n_entering > 0)
+        {
+            signal(cond_entering);
+            unlock(mutex_entering);
+            unlock(mutex_leaving);      
+        }
+
+        //--------------------------------
+        sleep(10) // stay park ...
+        //--------------------------------
+
+
+        lock(mutex_leaving):
+        n_leaving++;
+        unlock(mutex_leaving);
+
+        lock(mutex_gateway);
+        if(n_gateway > 0)
+        {
+            wait(cond_leaving, mutex_gateway);
+        }
+        
+        n_gateway++;
+        sleep(2);
+        n_gateway--;
+
+        unlock(mutex_gateway);
+
+        lock(mutex_leaving);
+        n_leaving--;
+        unlock(mutex_leaving);
+
+        lock(mutex_not_sub);
+        n_notsub_place++;
+        unlock(mutex_notsub);
+
+        lock(mutex_leaving);
+        lock(mutex_entering);
+        if(n_leaving > 0)//priority to leaving cars
+        {
+            signal(cond_leaving);
+            unlock(mutex_entering);
+            unlock(mutex_leaving);
+        }
+        else if(n_entering > 0)
+        {
+            signal(cond_entering);
+            unlock(mutex_entering);
+            unlock(mutex_leaving);      
+        }
+    }
+
+    //pas de place dans le parking
+    return
+}
 
 
 
