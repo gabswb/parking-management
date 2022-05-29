@@ -3,7 +3,7 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-#include "util.h"
+#include <stdio.h>
 
 #define MIN_PARKING_TIME 5
 #define MAX_PARKING_TIME 50
@@ -24,6 +24,15 @@ vehicle_t new_vehicle(int _id, bool _is_sub, int _parking_time);
 //return an array of random vehicules_t
 vehicle_t* random_sample_vehicle(int n_sub, int n_not_sub);
 //delete the array given in parameters
-void delete_sample_vehicule(vehicle_t* sample);
+void delete_vehicles(vehicle_t* sample);
+
+void print_vehicle(vehicle_t vehicle);
+void print_vehicles(size_t size, vehicle_t* vehicles);
+
+//return random integer
+int random_int(int min, int max);
+
+//return random boolean
+bool random_bool();
 
 #endif /*VEHICLE_H*/
