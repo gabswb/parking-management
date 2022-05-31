@@ -13,10 +13,13 @@ set(HEADER_FILES
 	src/global.h
 )
 
+#set(CMAKE_BUILD_TYPE Debug)
+
+#set(CMAKE_CXX_FLAGS "-g")
 
 #set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wfloat-equal -Wundef -Wconversion -Wcast-align")
 
-set (CMAKE_CXX_STANDARD 11)
+#set (CMAKE_CXX_STANDARD 11)
 
 add_compile_options(-Wall -Wextra -Wfloat-equal -Wundef -Wconversion -Wcast-align)
 

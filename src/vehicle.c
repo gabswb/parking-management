@@ -31,7 +31,7 @@ void delete_vehicles(vehicle_t* sample){
 }
 
 void print_vehicle(vehicle_t v){
-    printf("vehicle {id = %d, %s}\n",v.id, v.is_sub ? "sub" : "not sub");
+    printf("vehicle {id = %d, %s, %d}\n",v.id, v.is_sub ? "sub" : "not sub", v.parking_time);
 }
 
 void print_vehicles(size_t size, vehicle_t* vehicles){

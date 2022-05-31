@@ -8,7 +8,8 @@
 #include "global.h"
 #include "vehicle.h"
 
-#define BUFFER_SIZE
+#define BUFFER_SIZE 256
+#define NUM_BASE 10
 
 
 //parse txt file passed in command line
