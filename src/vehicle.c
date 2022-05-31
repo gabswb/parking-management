@@ -13,15 +13,16 @@ vehicle_t new_vehicle(int _id, bool _is_sub, int _parking_time){
 
 }
 
-vehicle_t* random_sample_vehicle(int n_sub, int n_not_sub){
+vehicle_t* random_sample_vehicle(size_t n_sub, size_t n_not_sub){
+
 
     vehicle_t* sample = malloc(sizeof(*sample) * (n_sub+n_not_sub));
     if(sample == NULL) exit(EXIT_FAILURE);//security for malloc
     
-    for(int i=0; i< n_sub+n_not_sub; i++){
-        sample[i] = new_random_vehicle(i);
+    for(size_t i=0; i< n_sub+n_not_sub; i++){
+        sample[i] = new_random_vehicle((int) i);
     }
-
+    
     return sample;
 }
 
@@ -39,12 +40,12 @@ void print_vehicles(size_t size, vehicle_t* vehicles){
     }
 }
 
-
+//random int between [min, max[
 int random_int(int min, int max){
   return(min + (rand() % (max - min)));
 }
 
 bool random_bool(){
-    if(random_int(0,1)) return true;
+    if(random_int(0,2)) return true;
     return false;
 }

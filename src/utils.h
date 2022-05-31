@@ -12,9 +12,9 @@
 
 
 //parse txt file passed in command line
-void parse_file(char* path, vehicle_t* vehicles);
+vehicle_t* parse_file(char* path);
 
 //extract the command line options
-void get_options(int argc, char* argv[], vehicle_t* vehicles);
+vehicle_t* get_options(int argc, char* argv[]);
 
 #endif /*UTILS_H*/

@@ -22,7 +22,7 @@ vehicle_t new_random_vehicle(int _id);
 vehicle_t new_vehicle(int _id, bool _is_sub, int _parking_time);
 
 //return an array of random vehicules_t
-vehicle_t* random_sample_vehicle(int n_sub, int n_not_sub);
+vehicle_t* random_sample_vehicle(size_t n_sub, size_t n_not_sub);
 //delete the array given in parameters
 void delete_vehicles(vehicle_t* sample);
 

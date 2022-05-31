@@ -1,11 +1,15 @@
 #include "utils.h"
 
 
-void parse_file(char* path, vehicle_t* vehicles){
+vehicle_t* parse_file(char* path){
 
+    printf("%s", path);
     FILE* file = fopen(path, "r");
     if(file == NULL) exit(EXIT_FAILURE);
     char buffer[BUFFER_SIZE+1];
+    vehicle_t* temp = NULL;
+
+    printf("parse file\n");
 
     if(fscanf(file, "%255s", buffer) == 1) puts(buffer);
     else exit(EXIT_FAILURE);
@@ -23,36 +27,42 @@ void parse_file(char* path, vehicle_t* vehicles){
     else exit(EXIT_FAILURE);
     n_notsub_vehicle = atoi(buffer);
 
-    vehicles = malloc(sizeof(*vehicles) * (n_sub_vehicle+n_notsub_vehicle));
-    if(vehicles == NULL) exit(EXIT_FAILURE);//security for malloc
+    temp = malloc(sizeof(*temp) * (n_sub_vehicle+n_notsub_vehicle));
+    if(temp == NULL) exit(EXIT_FAILURE);//security for malloc
 
     int column = 1;
     while(fscanf(file, "%255s", buffer) ==1){
         puts(buffer);
         
-        if(column%3 == 0) (vehicles++)->id = atoi(buffer);
+        if(column%3 == 0) (temp++)->id = atoi(buffer);
 
         else if(column%3 == 1){//== "true\0"
-            if(strcmp(buffer,"true")) (vehicles++)->is_sub = true;
-            else (vehicles++)->is_sub = false;
+            if(strcmp(buffer,"true")) (temp++)->is_sub = true;
+            else (temp++)->is_sub = false;
         }
-        else (vehicles++)->parking_time = atoi(buffer);
+        else (temp++)->parking_time = atoi(buffer);
     }
+
+    return temp;
 }
 
-void get_options(int argc, char* argv[], vehicle_t* vehicles){
+vehicle_t* get_options(int argc, char* argv[]){
+    vehicle_t* temp = NULL;
+
     switch (argc){
 
-        case 1 :vehicles = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
+        case 1 :temp = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
                 break;
 
-        case 2 :parse_file(argv[2], vehicles);
+        case 2 :temp = parse_file(argv[2]);
+
                 break;
 
         case 5 :n_sub_place = atoi(argv[1]);
                 n_notsub_place = atoi(argv[2]);
                 n_sub_vehicle = atoi(argv[3]);
                 n_notsub_vehicle = atoi(argv[4]);
+                temp = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
                 break;
 
         default:fprintf(stderr, "Usage: %s [-s <input_file> | -d arg1 agr2 arg3 arg4]\n"
@@ -62,4 +72,6 @@ void get_options(int argc, char* argv[], vehicle_t* vehicles){
                                 , argv[0]);
                 exit(EXIT_FAILURE);
     }
+
+    return temp;
 }

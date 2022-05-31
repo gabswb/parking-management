@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 
 project(parking-management)
 
@@ -13,6 +13,11 @@ set(HEADER_FILES
 	src/global.h
 )
 
-add_compile_options(-Wall -Wextra)
+
+#set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wfloat-equal -Wundef -Wconversion -Wcast-align")
+
+set (CMAKE_CXX_STANDARD 11)
+
+add_compile_options(-Wall -Wextra -Wfloat-equal -Wundef -Wconversion -Wcast-align)
 
 add_executable(parking-management src/main.c ${SRC_FILES} ${HEADER_FILES})

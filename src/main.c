@@ -15,11 +15,10 @@ Usage: [-s <input_file> | -d arg1 agr2 arg3 arg4]
                                 ,arg3 : nb of places for subscriber, arg4 : nb of places for non-subsriber
 */
 int main(int argc, char* argv[])
-{
-    vehicle_t* vehicles = NULL;
-    get_options(argc, argv, vehicles);
+{   
+    vehicle_t* vehicles = get_options(argc, argv);
 
-    print_vehicles(n_sub_vehicle+n_notsub_vehicle, vehicles);
+    print_vehicles((n_sub_vehicle+n_notsub_vehicle), vehicles);
 
     delete_vehicles(vehicles);
     
