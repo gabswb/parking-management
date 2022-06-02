@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include "global.h"
 #include "vehicle.h"
 
 #define BUFFER_SIZE 256

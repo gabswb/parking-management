@@ -1,5 +1,217 @@
 #include "vehicle.h"
 
+void fn_vehicle(void* arg){
+    vehicle_t vehicle = *(vehicle_t*) arg;
+
+    if(vehicle.is_sub) fn_sub_vehicle(&vehicle);
+
+    fn_notsub_vehicle(&vehicle);
+}
+
+void fn_sub_vehicle(vehicle_t* vehicle){
+
+    char* v_name = vehicle_to_string(*vehicle);
+
+    pthread_mutex_lock(&mutex_sub);
+    if(n_sub_place > 0)
+    {
+        pthread_mutex_unlock(&mutex_sub);
+
+        pthread_mutex_lock(&mutex_entering);
+        n_entering++;
+        pthread_mutex_unlock(&mutex_entering);
+
+    printf("%s want to enter in the parking\n", v_name);
+
+
+        pthread_mutex_lock(&mutex_gateway);
+        while(n_gateway > 0) //while() ?
+        { 
+            pthread_cond_wait(&cond_entering, &mutex_gateway);
+        }
+    printf("Green light for %s\n", v_name);
+        n_gateway++;
+    printf("%s is in the gateway ...\n", v_name);
+        sleep(2); //time in gateway ...
+        n_gateway--;
+
+        pthread_mutex_unlock(&mutex_gateway);
+
+        pthread_mutex_lock(&mutex_sub);
+        n_sub_place--;
+    printf("%s is parked\n", v_name);
+        pthread_mutex_unlock(&mutex_sub);
+
+        pthread_mutex_lock(&mutex_entering);
+        n_entering--;
+        pthread_mutex_unlock(&mutex_entering);
+
+        pthread_mutex_lock(&mutex_leaving);
+        pthread_mutex_lock(&mutex_entering);
+        if(n_leaving > 0)//priority to leaving cars
+        {
+            pthread_cond_signal(&cond_leaving);
+            pthread_mutex_unlock(&mutex_entering);
+            pthread_mutex_unlock(&mutex_leaving);
+        }
+        else if(n_entering > 0)
+        {
+            pthread_cond_signal(&cond_entering);
+            pthread_mutex_unlock(&mutex_entering);
+            pthread_mutex_unlock(&mutex_leaving);      
+        }
+
+
+        //--------------------------------
+        sleep(10); // stay park ...
+        //--------------------------------
+
+    printf("%s want to leave in the parking\n", v_name);
+
+
+        pthread_mutex_lock(&mutex_leaving);
+        n_leaving++;
+        pthread_mutex_unlock(&mutex_leaving);
+
+        pthread_mutex_lock(&mutex_gateway);
+        if(n_gateway > 0) //while() ?
+        { 
+            pthread_cond_wait(&cond_entering, &mutex_gateway);
+        }
+
+    printf("Green light for %s\n", v_name);
+        n_gateway++;
+    printf("%s is in the gateway ...\n", v_name);        
+        sleep(2); //time in gateway ...
+        n_gateway--;
+
+        pthread_mutex_unlock(&mutex_gateway);
+
+        pthread_mutex_lock(&mutex_leaving);
+        n_leaving--;
+        pthread_mutex_unlock(&mutex_leaving);
+
+        pthread_mutex_lock(&mutex_sub);
+        n_sub_place++;
+        pthread_mutex_unlock(&mutex_sub);
+
+    printf("%s is out\n", v_name);   
+
+        pthread_mutex_lock(&mutex_leaving);
+        pthread_mutex_lock(&mutex_entering);
+        if(n_leaving > 0)//priority to leaving cars
+        {
+            pthread_cond_signal(&cond_leaving);
+            pthread_mutex_unlock(&mutex_entering);
+            pthread_mutex_unlock(&mutex_leaving);
+        }
+        else if(n_entering > 0)
+        {
+            pthread_cond_signal(&cond_entering);
+            pthread_mutex_unlock(&mutex_entering);
+            pthread_mutex_unlock(&mutex_leaving);      
+        }
+    }
+    
+    return;
+}
+
+void fn_notsub_vehicle(vehicle_t* vehicle){
+
+    pthread_mutex_lock(&mutex_notsub);
+    if(n_notsub_place > 0)
+    {
+        pthread_mutex_unlock(&mutex_notsub);
+
+        pthread_mutex_lock(&mutex_entering);
+        n_entering++;
+        pthread_mutex_unlock(&mutex_leaving);
+
+        pthread_mutex_lock(&mutex_gateway);
+        while(n_gateway > 0)
+        {
+            pthread_cond_wait(&cond_entering, &mutex_gateway);
+        }
+        
+        n_gateway++;
+        sleep(2); //time in gateway ...
+        n_gateway--;
+
+        pthread_mutex_unlock(&mutex_gateway);
+
+        pthread_mutex_lock(&mutex_notsub);
+        n_notsub_place--;
+        pthread_mutex_unlock(&mutex_notsub);
+
+        pthread_mutex_lock(&mutex_entering);
+        n_entering++;
+        pthread_mutex_unlock(&mutex_entering);
+
+        pthread_mutex_lock(&mutex_leaving);
+        pthread_mutex_lock(&mutex_entering);
+        if(n_leaving > 0)//priority to leaving cars
+        {
+            pthread_cond_signal(&cond_leaving);
+            pthread_mutex_unlock(&mutex_entering);
+            pthread_mutex_unlock(&mutex_leaving);
+        }
+        else if(n_entering > 0)
+        {
+            pthread_cond_signal(&cond_entering);
+            pthread_mutex_unlock(&mutex_entering);
+            pthread_mutex_unlock(&mutex_leaving);      
+        }
+
+        //--------------------------------
+        sleep(10); // stay park ...
+        //--------------------------------
+
+
+        pthread_mutex_lock(&mutex_leaving);
+        n_leaving++;
+        pthread_mutex_unlock(&mutex_leaving);
+
+        pthread_mutex_lock(&mutex_gateway);
+        if(n_gateway > 0)
+        {
+            pthread_cond_wait(&cond_leaving, &mutex_gateway);
+        }
+        
+        n_gateway++;
+        sleep(2);
+        n_gateway--;
+
+        pthread_mutex_unlock(&mutex_gateway);
+
+        pthread_mutex_lock(&mutex_leaving);
+        n_leaving--;
+        pthread_mutex_unlock(&mutex_leaving);
+
+        pthread_mutex_lock(&mutex_notsub);
+        n_notsub_place++;
+        pthread_mutex_unlock(&mutex_notsub);
+
+        pthread_mutex_lock(&mutex_leaving);
+        pthread_mutex_lock(&mutex_entering);
+        if(n_leaving > 0)//priority to leaving cars
+        {
+            pthread_cond_signal(&cond_leaving);
+            pthread_mutex_unlock(&mutex_entering);
+            pthread_mutex_unlock(&mutex_leaving);
+        }
+        else if(n_entering > 0)
+        {
+            pthread_cond_signal(&cond_entering);
+            pthread_mutex_unlock(&mutex_entering);
+            pthread_mutex_unlock(&mutex_leaving);      
+        }
+    }
+
+    //pas de place dans le parking
+
+}
+
+
 vehicle_t new_random_vehicle(int _id){
     return (vehicle_t) {.id = _id,
                         .is_sub = random_bool(),
@@ -32,6 +244,12 @@ void delete_vehicles(vehicle_t* sample){
 
 void print_vehicle(vehicle_t v){
     printf("vehicle {id = %d, %s, %d}\n",v.id, v.is_sub ? "sub" : "not sub", v.parking_time);
+}
+
+char* vehicle_to_string(vehicle_t v){
+    char* buffer = malloc(sizeof(char)*256);
+    sprintf(buffer, "vehicle {id = %d, %s, %d}",v.id, v.is_sub ? "sub" : "not sub", v.parking_time);
+    return buffer; 
 }
 
 void print_vehicles(size_t size, vehicle_t* vehicles){

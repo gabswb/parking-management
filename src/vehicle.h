@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <pthread.h>
+#include "global.h"
 
 #define MIN_PARKING_TIME 5
 #define MAX_PARKING_TIME 50
@@ -13,8 +15,17 @@ struct vehicle
     int id;
     bool is_sub;
     int parking_time;
+
+    pthread_t thread;
 };
 typedef struct vehicle vehicle_t;
+
+void fn_vehicle(void* arg);
+
+void fn_sub_vehicle(vehicle_t* v);
+
+void fn_notsub_vehicle(vehicle_t* v);
+
 
 //return new vehicle_t with random attributes
 vehicle_t new_random_vehicle(int _id);
@@ -28,6 +39,8 @@ void delete_vehicles(vehicle_t* sample);
 
 void print_vehicle(vehicle_t vehicle);
 void print_vehicles(size_t size, vehicle_t* vehicles);
+
+char* vehicle_to_string(vehicle_t vehicle);
 
 //return random integer
 int random_int(int min, int max);

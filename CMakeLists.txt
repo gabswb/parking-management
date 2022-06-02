@@ -12,7 +12,7 @@ set(HEADER_FILES
 	src/utils.h
 	src/global.h
 )
-
+	
 #set(CMAKE_BUILD_TYPE Debug)
 
 #set(CMAKE_CXX_FLAGS "-g")
@@ -24,3 +24,7 @@ set(HEADER_FILES
 add_compile_options(-Wall -Wextra -Wfloat-equal -Wundef -Wconversion -Wcast-align)
 
 add_executable(parking-management src/main.c ${SRC_FILES} ${HEADER_FILES})
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+target_link_libraries(parking-management PRIVATE Threads::Threads)

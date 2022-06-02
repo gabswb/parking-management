@@ -7,6 +7,18 @@ extern size_t n_notsub_place;
 extern size_t n_sub_vehicle;
 extern size_t n_notsub_vehicle;
 
+extern int n_gateway;
+extern int n_entering;
+extern int n_leaving;
+
+extern pthread_mutex_t mutex_gateway;
+extern pthread_mutex_t mutex_entering;
+extern pthread_mutex_t mutex_leaving;  
+extern pthread_mutex_t mutex_sub;
+extern pthread_mutex_t mutex_notsub;  
+
+extern pthread_cond_t cond_entering;
+extern pthread_cond_t cond_leaving;  
 
 /*char usage_message[] = 
 "\
