@@ -1,9 +1,14 @@
 #include "vehicle.h"
 
 void fn_vehicle(void* arg){
-    vehicle_t vehicle = *(vehicle_t*) arg;
 
-    if(vehicle.is_sub) fn_sub_vehicle(&vehicle);
+    vehicle_t vehicle = *(vehicle_t*) arg;
+    printf("entering ");
+    print_vehicle(vehicle);
+    if(vehicle.is_sub) {
+        fn_sub_vehicle(&vehicle);
+        return;
+    }
 
     fn_notsub_vehicle(&vehicle);
 }
@@ -63,10 +68,10 @@ void fn_sub_vehicle(vehicle_t* vehicle){
 
 
         //--------------------------------
-        sleep(10); // stay park ...
+        sleep(5); // stay park ...
         //--------------------------------
 
-    printf("%s want to leave in the parking\n", v_name);
+    printf("%s wants to leave in the parking\n", v_name);
 
 
         pthread_mutex_lock(&mutex_leaving);
@@ -74,7 +79,7 @@ void fn_sub_vehicle(vehicle_t* vehicle){
         pthread_mutex_unlock(&mutex_leaving);
 
         pthread_mutex_lock(&mutex_gateway);
-        if(n_gateway > 0) //while() ?
+        while(n_gateway > 0) //while() ?
         { 
             pthread_cond_wait(&cond_entering, &mutex_gateway);
         }
@@ -163,7 +168,7 @@ void fn_notsub_vehicle(vehicle_t* vehicle){
         }
 
         //--------------------------------
-        sleep(10); // stay park ...
+        sleep(5); // stay park ...
         //--------------------------------
 
 
@@ -172,7 +177,7 @@ void fn_notsub_vehicle(vehicle_t* vehicle){
         pthread_mutex_unlock(&mutex_leaving);
 
         pthread_mutex_lock(&mutex_gateway);
-        if(n_gateway > 0)
+        while(n_gateway > 0)
         {
             pthread_cond_wait(&cond_leaving, &mutex_gateway);
         }
