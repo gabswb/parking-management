@@ -31,9 +31,11 @@ vehicle_t* random_sample_vehicle(size_t n_sub, size_t n_not_sub);
 //delete the array given in parameters
 void delete_vehicles(vehicle_t* sample);
 
+//print vehicle informations
 void print_vehicle(vehicle_t vehicle);
+//print all vehicle informations 
 void print_vehicles(size_t size, vehicle_t* vehicles);
-
+//return string containing all vehicle informations
 char* vehicle_to_string(vehicle_t vehicle);
 
 //return random integer

@@ -11,7 +11,7 @@
 #define NUM_BASE 10
 
 
-//parse txt file passed in command line
+//parse csv file passed in command line
 vehicle_t* parse_file(char* path);
 
 //extract the command line options
