@@ -1,5 +1,15 @@
 #include "utils.h"
 
+bool Verbose = false;
+
+void verbose(const char* format, ...){
+    if(Verbose){
+        va_list args;
+        va_start(args, format);
+        vprintf(format, args);
+        va_end(args);
+    }
+}
 
 vehicle_t* parse_file(char* path){
 
@@ -58,34 +68,56 @@ vehicle_t* parse_file(char* path){
     return temp;
 }
 
-//TODO : utiliser les options -d et -s
 vehicle_t* get_options(int argc, char* argv[]){
 
     vehicle_t* temp = NULL;
-    char* end_ptr;
+    bool is_f_used = false;//flag to check if -f is used because -f and -p are not compatible
+    bool is_p_used = false;
 
-    switch (argc){
-        //if no arguments passed in cmd
-        case 1 : temp = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
-                break;
-        //if file name passed in cmd
-        case 2 : temp = parse_file(argv[1]);
-                break;
-        //if n_sub_place, n_notsub_place, n_sub_vehicle, n_notsub_vehicle passed in cmd
-        case 5 : n_sub_place = (size_t) strtol(argv[1], &end_ptr, NUM_BASE);
-                n_notsub_place = (size_t) strtol(argv[2], &end_ptr, NUM_BASE);
-                n_sub_vehicle = (size_t) strtol(argv[3], &end_ptr, NUM_BASE);
-                n_notsub_vehicle = (size_t) strtol(argv[4], &end_ptr, NUM_BASE);
-                temp = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
-                break;
-
-        default : fprintf(stderr, "\nUsage: %s [-s <input_file> | -d arg1 agr2 arg3 arg4]\n\n"
-                                "   [-s] <path-to-data>        ,run program with the data in the specified .txt file\n"
-                                "   [-d] arg1 arg2 arg3 arg4   ,arg1 : nb of subscribed vehicules, arg2 : nb of not subscribed vehicules\n"
-                                "                              ,arg3 : nb of places for subscriber, arg4 : nb of places for non-subsriber\n\n"
-                                , argv[0]);
-                exit(EXIT_FAILURE);
+    if(argc > 7 ){
+        fprintf(stderr, usage_msg, argv[0]);
+        exit(EXIT_FAILURE);
     }
+
+    for(int i=1; i < argc; i++){
+        if(strcmp(argv[i], "-f") == 0){
+            if(i+1 >= argc || is_p_used == true){
+                fprintf(stderr, usage_msg, argv[0]);
+                exit(EXIT_FAILURE);
+
+            }
+            temp = parse_file(argv[i+1]);
+            is_f_used = true;
+            i+=1;
+        }
+        else if(strcmp(argv[i], "-p") == 0){
+            if(i+4 >= argc || is_f_used == true){
+                fprintf(stderr, usage_msg, argv[0]);
+                exit(EXIT_FAILURE);
+            }
+            n_sub_place = (size_t) strtol(argv[i+1], NULL, NUM_BASE);
+            n_notsub_place = (size_t) strtol(argv[i+2], NULL, NUM_BASE);
+            n_sub_vehicle = (size_t) strtol(argv[i+3], NULL, NUM_BASE);
+            n_notsub_vehicle = (size_t) strtol(argv[i+4], NULL, NUM_BASE);
+            temp = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
+            is_p_used = true;
+            i+=4;
+        }
+        else if(strcmp(argv[i], "-v") == 0){
+            Verbose = true;
+            if(argc == 2) temp = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
+        }
+        else{
+            fprintf(stderr, usage_msg, argv[0]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    verbose("Number of place for sub : %zu\n"
+            "Number of place for non sub : %zu\n"
+            "Number of vechicle sub : %zu\n"
+            "Number of vehicle non sub : %zu\n",
+            n_sub_place, n_notsub_place, n_sub_vehicle, n_notsub_vehicle);
 
     return temp;
 }

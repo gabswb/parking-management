@@ -22,11 +22,12 @@ pthread_cond_t cond_entering = PTHREAD_COND_INITIALIZER;
 pthread_cond_t cond_leaving = PTHREAD_COND_INITIALIZER;   
 
 /*
-Usage: [-s <input_file> | -d arg1 agr2 arg3 arg4]
+Usage: [-f <input_file> | -p arg1 agr2 arg3 arg4] [-v] [-h] 
 
-    [-s] <input_file>           ,run program with the data in the specified .txt file
-    [-d] arg1 arg2 arg3 arg4    ,arg1 : nb of subscribed vehicules, arg2 : nb of not subscribed vehicules
-                                ,arg3 : nb of places for subscriber, arg4 : nb of places for non-subsriber
+    [-f] <input_file>           ,run program with the data in the specified .txt file
+    [-p] arg1 arg2 arg3 arg4    ,arg1 : nb of subscribed vehicules, arg2 : nb of not subscribed vehicules, arg3 : nb of places for subscriber, arg4 : nb of places for non-subsriber
+    [-v]                        ,verbose mode
+    [-h]                        ,help message
 */
 int main(int argc, char* argv[])
 {   
