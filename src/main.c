@@ -12,14 +12,14 @@ int n_gateway = 0;
 int n_entering = 0;
 int n_leaving = 0;
 
-pthread_mutex_t mutex_gateway = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutex_entering = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutex_leaving = PTHREAD_MUTEX_INITIALIZER;  
-pthread_mutex_t mutex_sub = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t mutex_notsub = PTHREAD_MUTEX_INITIALIZER; 
+pthread_mutex_t mutex_gateway/* = PTHREAD_MUTEX_INITIALIZE*/;
+pthread_mutex_t mutex_entering /*= PTHREAD_MUTEX_INITIALIZER*/;
+pthread_mutex_t mutex_leaving /*= PTHREAD_MUTEX_INITIALIZER*/;  
+pthread_mutex_t mutex_sub /*= PTHREAD_MUTEX_INITIALIZER*/;
+pthread_mutex_t mutex_notsub /*= PTHREAD_MUTEX_INITIALIZER*/; 
 
 pthread_cond_t cond_entering = PTHREAD_COND_INITIALIZER;
-pthread_cond_t cond_leaving = PTHREAD_COND_INITIALIZER;   
+pthread_cond_t cond_leaving = PTHREAD_COND_INITIALIZER;  
 
 /*
 Usage: [-s <input_file> | -d arg1 agr2 arg3 arg4]
@@ -32,6 +32,13 @@ int main(int argc, char* argv[])
 {   
     
     vehicle_t* vehicles = get_options(argc, argv);
+
+    pthread_mutex_init(&mutex_entering, NULL);
+    pthread_mutex_init(&mutex_gateway, NULL);
+    pthread_mutex_init(&mutex_leaving, NULL);
+    pthread_mutex_init(&mutex_notsub, NULL);
+    pthread_mutex_init(&mutex_sub, NULL);
+
 
     for(size_t i=0; i< (n_notsub_vehicle+n_sub_vehicle); i++){
         pthread_create(&(vehicles[i].thread), NULL, (void*) fn_vehicle, (void*) &vehicles[i]);

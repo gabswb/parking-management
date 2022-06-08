@@ -3,7 +3,7 @@
 void fn_vehicle(void* arg){
 
     vehicle_t vehicle = *(vehicle_t*) arg;
-    printf("entering ");
+    printf("In function ");
     print_vehicle(vehicle);
     if(vehicle.is_sub) {
         fn_sub_vehicle(&vehicle);
@@ -22,9 +22,12 @@ void fn_sub_vehicle(vehicle_t* vehicle){
     {
         pthread_mutex_unlock(&mutex_sub);
 
+        printf("%s take mutex entering\n", v_name);
         pthread_mutex_lock(&mutex_entering);
         n_entering++;
         pthread_mutex_unlock(&mutex_entering);
+        printf("%s give mutex entering\n", v_name);
+
 
     printf("%s want to enter in the parking\n", v_name);
 
@@ -47,20 +50,26 @@ void fn_sub_vehicle(vehicle_t* vehicle){
     printf("%s is parked\n", v_name);
         pthread_mutex_unlock(&mutex_sub);
 
+
+
+
         pthread_mutex_lock(&mutex_entering);
         n_entering--;
+        printf("n_entering --\n");
         pthread_mutex_unlock(&mutex_entering);
 
         pthread_mutex_lock(&mutex_leaving);
         pthread_mutex_lock(&mutex_entering);
         if(n_leaving > 0)//priority to leaving cars
         {
+            printf("signal leaving\n");
             pthread_cond_signal(&cond_leaving);
             pthread_mutex_unlock(&mutex_entering);
             pthread_mutex_unlock(&mutex_leaving);
         }
         else if(n_entering > 0)
         {
+            printf("signal entering\n");
             pthread_cond_signal(&cond_entering);
             pthread_mutex_unlock(&mutex_entering);
             pthread_mutex_unlock(&mutex_leaving);      
