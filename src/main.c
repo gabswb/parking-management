@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
     pthread_mutex_init(&mutex_sub, NULL);
 
 
+
     for(size_t i=0; i< (n_notsub_vehicle+n_sub_vehicle); i++){
         pthread_create(&(vehicles[i].thread), NULL, (void*) fn_vehicle, (void*) &vehicles[i]);
     }
