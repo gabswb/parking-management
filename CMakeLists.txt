@@ -15,13 +15,13 @@ set(HEADER_FILES
 	
 #set(CMAKE_BUILD_TYPE Debug)
 
-#set(CMAKE_CXX_FLAGS "-g")
+#set(CMAKE_CXX_FLAGS "-ggdb3")
 
 #set(CMAKE_CXX_FLAGS "-Wall -Wextra -Wfloat-equal -Wundef -Wconversion -Wcast-align")
 
 #set (CMAKE_CXX_STANDARD 11)
 
-add_compile_options(-Wall -Wextra -Wfloat-equal -Wundef -Wconversion -Wcast-align)
+add_compile_options(-Wall -Wextra -Wfloat-equal -Wundef -Wconversion -Wcast-align -ggdb3)
 
 add_executable(parking-management src/main.c ${SRC_FILES} ${HEADER_FILES})
 

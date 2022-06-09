@@ -3,13 +3,15 @@
 bool Verbose = false;
 
 void verbose(const char* format, ...){
-    if(Verbose){
-        va_list args;
-        va_start(args, format);
-        vprintf(format, args);
-        va_end(args);
-    }
+    if(!Verbose) return;
+
+    va_list args;
+    va_start(args, format);
+    vprintf(format, args);
+    fflush(stdout);
+    va_end(args);
 }
+
 
 vehicle_t* parse_file(char* path){
 
@@ -48,7 +50,7 @@ vehicle_t* parse_file(char* path){
     gets all the other lines containing the data with the following format : id,is_sub,parking_time
     */
     size_t index = 0;
-    while(fgets(buffer, BUFFER_SIZE, file)){
+    while(fgets(buffer, BUFFER_SIZE, file) && index < n_sub_vehicle+n_notsub_vehicle){
 
         //gets id
         strtok_result = strtok(buffer, csv_token);
@@ -65,6 +67,10 @@ vehicle_t* parse_file(char* path){
         
         index++;
     }
+    if(index == n_sub_place+n_notsub_place){
+        fprintf(stderr, "Error : the number of vehicle given is not correct\n");
+        exit(EXIT_FAILURE);
+    }
     return temp;
 }
 
@@ -78,6 +84,9 @@ vehicle_t* get_options(int argc, char* argv[]){
         fprintf(stderr, usage_msg, argv[0]);
         exit(EXIT_FAILURE);
     }
+
+    if(argc == 1) temp = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
+
 
     for(int i=1; i < argc; i++){
         if(strcmp(argv[i], "-f") == 0){
@@ -116,8 +125,16 @@ vehicle_t* get_options(int argc, char* argv[]){
     verbose("Number of place for sub : %zu\n"
             "Number of place for non sub : %zu\n"
             "Number of vechicle sub : %zu\n"
-            "Number of vehicle non sub : %zu\n",
+            "Number of vehicle non sub : %zu\n\n\n",
             n_sub_place, n_notsub_place, n_sub_vehicle, n_notsub_vehicle);
 
     return temp;
+}
+
+void print_info(const char* format, ...){
+    va_list args;
+    va_start(args, format);
+    vprintf(format, args);
+    fflush(stdout);
+    va_end(args);
 }

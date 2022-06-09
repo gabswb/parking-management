@@ -17,71 +17,56 @@ bool fn_sub_vehicle(vehicle_t* vehicle){
 
 
     pthread_mutex_lock(&mutex_sub);
-    if(n_sub_place < 1){
+    if(n_sub_place < 1){//If there is no place for the sub vehicle
         pthread_mutex_unlock(&mutex_sub);
-        printf("No place for %s\n", v_name);
+        print_info("No sub place for %s\n", v_name);
         return false;
     }
-
     pthread_mutex_unlock(&mutex_sub);
+
 
     pthread_mutex_lock(&mutex_entering);
     n_entering++;
     pthread_mutex_unlock(&mutex_entering);
-
-
-    printf("%s want to enter in the parking\n", v_name);
-    fflush(stdout);
+    print_info("%s want to enter in the parking\n", v_name);
 
 
     pthread_mutex_lock(&mutex_gateway);
-    while(n_gateway > 0) 
+    while(n_gateway > 0)
+    { 
         pthread_cond_wait(&cond_entering, &mutex_gateway);
-
-
-    printf("Green light for %s\n", v_name);
-    fflush(stdout);
-
+    }
+    print_info("Green light for %s\n", v_name);
     n_gateway++;
     pthread_mutex_unlock(&mutex_gateway);
-printf("%s is in the gateway ...\n", v_name);
-    fflush(stdout);
 
+
+    //-----------------------------------------------
+    print_info("%s is in the gateway ...\n", v_name);
     sleep(2); //time in gateway ...
-            pthread_mutex_lock(&mutex_gateway);
+    //-----------------------------------------------
 
-    n_gateway--;
-        printf("%s out of the gateway ...\n", v_name);
-        fflush(stdout);
-
-    pthread_mutex_unlock(&mutex_gateway);
-
+            
+    pthread_mutex_lock(&mutex_gateway);
     pthread_mutex_lock(&mutex_sub);
-    n_sub_place--;
-
-
-    pthread_mutex_unlock(&mutex_sub);
-
-
-
-
     pthread_mutex_lock(&mutex_entering);
+    n_sub_place--;
     n_entering--;
-    //printf("n_entering --\n");
+    n_gateway--;
+    print_info("%s out of the gateway ...\n", v_name);
+    pthread_mutex_unlock(&mutex_gateway);
+    pthread_mutex_unlock(&mutex_sub); 
     pthread_mutex_unlock(&mutex_entering);
 
-printf("%s is parked\n", v_name);
-fflush(stdout); 
+    print_info("%s is parked\n", v_name);
     pthread_mutex_lock(&mutex_leaving);
     pthread_mutex_lock(&mutex_entering);
     if(n_leaving > 0)//priority to leaving cars
     {
-        printf("signal leaving\n");
         pthread_cond_signal(&cond_leaving);
     }
     else if(n_entering > 0)
     {
-        printf("signal entering\n");
         pthread_cond_signal(&cond_entering);     
     }
     pthread_mutex_unlock(&mutex_entering);
@@ -92,9 +77,7 @@ fflush(stdout);
     sleep(5); // stay park ...
     //--------------------------------
 
-printf("%s wants to leave in the parking\n", v_name);
-    fflush(stdout);
-
+    print_info("%s wants to leave in the parking\n", v_name);
     pthread_mutex_lock(&mutex_leaving);
     n_leaving++;
     pthread_mutex_unlock(&mutex_leaving);
@@ -104,147 +87,168 @@ printf("%s wants to leave in the parking\n", v_name);
     { 
         pthread_cond_wait(&cond_leaving, &mutex_gateway);
     }
-
-printf("Green light for %s\n", v_name);
-    fflush(stdout);
-
+    printf("Green light for %s\n", v_name);
     n_gateway++;
     pthread_mutex_unlock(&mutex_gateway);//important pour que le mutex ne fasse pas office de synchronisation
-printf("%s is in the gateway ...\n", v_name);      
-    fflush(stdout);
 
 
+
+    //-----------------------------------------------
+    print_info("%s is in the gateway ...\n", v_name);      
     sleep(2); //time in gateway ...
+    //-----------------------------------------------
+
+
+
     pthread_mutex_lock(&mutex_gateway);
-    n_gateway--;
-printf("%s out of the gateway ...\n", v_name);
-fflush(stdout);
-
-    pthread_mutex_unlock(&mutex_gateway);
-
     pthread_mutex_lock(&mutex_leaving);
-    n_leaving--;
-    pthread_mutex_unlock(&mutex_leaving);
-
     pthread_mutex_lock(&mutex_sub);
+    n_gateway--;
+    n_leaving--;
     n_sub_place++;
+    print_info("%s out of the gateway ...\n", v_name);
+    pthread_mutex_unlock(&mutex_gateway);
+    pthread_mutex_unlock(&mutex_leaving);
     pthread_mutex_unlock(&mutex_sub);
 
-    printf("%s is out\n", v_name);   
-    fflush(stdout);
 
-
+    print_info("%s is out\n", v_name);   
     pthread_mutex_lock(&mutex_leaving);
     pthread_mutex_lock(&mutex_entering);
     if(n_leaving > 0)//priority to leaving cars
     {
-        printf("signal leaving\n");
         pthread_cond_signal(&cond_leaving);
     }
     else if(n_entering > 0)
     {
-        printf("signal entering\n");
         pthread_cond_signal(&cond_entering);      
     }
     pthread_mutex_unlock(&mutex_entering);
     pthread_mutex_unlock(&mutex_leaving);
     
-    
+    free(v_name);
     return true;
 }
 
 void fn_notsub_vehicle(vehicle_t* vehicle){
 
-    pthread_mutex_lock(&mutex_notsub);
-    if(n_notsub_place > 0)
-    {
-        pthread_mutex_unlock(&mutex_notsub);
-
-        pthread_mutex_lock(&mutex_entering);
-        n_entering++;
-        pthread_mutex_unlock(&mutex_leaving);
-
-        pthread_mutex_lock(&mutex_gateway);
-        while(n_gateway > 0)
-        {
-            pthread_cond_wait(&cond_entering, &mutex_gateway);
-        }
-        
-        n_gateway++;
-        sleep(2); //time in gateway ...
-        n_gateway--;
-
-        pthread_mutex_unlock(&mutex_gateway);
-
-        pthread_mutex_lock(&mutex_notsub);
-        n_notsub_place--;
-        pthread_mutex_unlock(&mutex_notsub);
-
-        pthread_mutex_lock(&mutex_entering);
-        n_entering++;
-        pthread_mutex_unlock(&mutex_entering);
-
-        pthread_mutex_lock(&mutex_leaving);
-        pthread_mutex_lock(&mutex_entering);
-        if(n_leaving > 0)//priority to leaving cars
-        {
-            pthread_cond_signal(&cond_leaving);
-            pthread_mutex_unlock(&mutex_entering);
-            pthread_mutex_unlock(&mutex_leaving);
-        }
-        else if(n_entering > 0)
-        {
-            pthread_cond_signal(&cond_entering);
-            pthread_mutex_unlock(&mutex_entering);
-            pthread_mutex_unlock(&mutex_leaving);      
-        }
-
-        //--------------------------------
-        sleep(5); // stay park ...
-        //--------------------------------
+    char* v_name = vehicle_to_string(*vehicle);
 
 
-        pthread_mutex_lock(&mutex_leaving);
-        n_leaving++;
-        pthread_mutex_unlock(&mutex_leaving);
-
-        pthread_mutex_lock(&mutex_gateway);
-        while(n_gateway > 0)
-        {
-            pthread_cond_wait(&cond_leaving, &mutex_gateway);
-        }
-        
-        n_gateway++;
-        sleep(2);
-        n_gateway--;
-
-        pthread_mutex_unlock(&mutex_gateway);
-
-        pthread_mutex_lock(&mutex_leaving);
-        n_leaving--;
-        pthread_mutex_unlock(&mutex_leaving);
-
-        pthread_mutex_lock(&mutex_notsub);
-        n_notsub_place++;
-        pthread_mutex_unlock(&mutex_notsub);
-
-        pthread_mutex_lock(&mutex_leaving);
-        pthread_mutex_lock(&mutex_entering);
-        if(n_leaving > 0)//priority to leaving cars
-        {
-            pthread_cond_signal(&cond_leaving);
-            pthread_mutex_unlock(&mutex_entering);
-            pthread_mutex_unlock(&mutex_leaving);
-        }
-        else if(n_entering > 0)
-        {
-            pthread_cond_signal(&cond_entering);
-            pthread_mutex_unlock(&mutex_entering);
-            pthread_mutex_unlock(&mutex_leaving);      
-        }
+    pthread_mutex_lock(&mutex_sub);
+    if(n_notsub_place < 1){//If there is no place for the non sub vehicle
+        pthread_mutex_unlock(&mutex_sub);
+        print_info("No non sub place for %s\n", v_name);
     }
+    pthread_mutex_unlock(&mutex_sub);
 
-    //pas de place dans le parking
+
+    pthread_mutex_lock(&mutex_entering);
+    n_entering++;
+    pthread_mutex_unlock(&mutex_entering);
+    print_info("%s want to enter in the parking\n", v_name);
+
+
+    pthread_mutex_lock(&mutex_gateway);
+    while(n_gateway > 0)
+    { 
+        pthread_cond_wait(&cond_entering, &mutex_gateway);
+    }
+    print_info("Green light for %s\n", v_name);
+    n_gateway++;
+    pthread_mutex_unlock(&mutex_gateway);
+
+
+    //-----------------------------------------------
+    print_info("%s is in the gateway ...\n", v_name);
+    sleep(2); //time in gateway ...
+    //-----------------------------------------------
+
+            
+    pthread_mutex_lock(&mutex_gateway);
+    pthread_mutex_lock(&mutex_sub);
+    pthread_mutex_lock(&mutex_entering);
+    n_notsub_place--;
+    n_entering--;
+    n_gateway--;
+    print_info("%s out of the gateway ...\n", v_name);
+    pthread_mutex_unlock(&mutex_gateway);
+    pthread_mutex_unlock(&mutex_sub); 
+    pthread_mutex_unlock(&mutex_entering);
+
+    print_info("%s is parked\n", v_name);
+    pthread_mutex_lock(&mutex_leaving);
+    pthread_mutex_lock(&mutex_entering);
+    if(n_leaving > 0)//priority to leaving cars
+    {
+        verbose("%s signal to leaving\n", v_name);
+        pthread_cond_signal(&cond_leaving);
+    }
+    else if(n_entering > 0)
+    {
+        verbose("%s signal to leaving\n", v_name);
+        pthread_cond_signal(&cond_entering);     
+    }
+    pthread_mutex_unlock(&mutex_entering);
+    pthread_mutex_unlock(&mutex_leaving); 
+
+
+    //--------------------------------
+    sleep(5); // stay park ...
+    //--------------------------------
+
+    print_info("%s wants to leave in the parking\n", v_name);
+    pthread_mutex_lock(&mutex_leaving);
+    n_leaving++;
+    pthread_mutex_unlock(&mutex_leaving);
+
+    pthread_mutex_lock(&mutex_gateway);
+    while(n_gateway > 0) //while() ?
+    { 
+        pthread_cond_wait(&cond_leaving, &mutex_gateway);
+    }
+    printf("Green light for %s\n", v_name);
+    n_gateway++;
+    pthread_mutex_unlock(&mutex_gateway);//important pour que le mutex ne fasse pas office de synchronisation
+
+
+
+    //-----------------------------------------------
+    print_info("%s is in the gateway ...\n", v_name);      
+    sleep(2); //time in gateway ...
+    //-----------------------------------------------
+
+
+
+    pthread_mutex_lock(&mutex_gateway);
+    pthread_mutex_lock(&mutex_leaving);
+    pthread_mutex_lock(&mutex_sub);
+    n_gateway--;
+    n_leaving--;
+    n_notsub_place++;
+    print_info("%s out of the gateway ...\n", v_name);
+    pthread_mutex_unlock(&mutex_gateway);
+    pthread_mutex_unlock(&mutex_leaving);
+    pthread_mutex_unlock(&mutex_sub);
+
+
+    print_info("%s is out\n", v_name);   
+    pthread_mutex_lock(&mutex_leaving);
+    pthread_mutex_lock(&mutex_entering);
+    if(n_leaving > 0)//priority to leaving cars
+    {
+        verbose("%s signal to leaving\n", v_name);
+        pthread_cond_signal(&cond_leaving);
+    }
+    else if(n_entering > 0)
+    {
+        verbose("%s signal to leaving\n", v_name);       
+        pthread_cond_signal(&cond_entering);      
+    }
+    pthread_mutex_unlock(&mutex_entering);
+    pthread_mutex_unlock(&mutex_leaving);
+
+    free(v_name);
 
 }
 
@@ -280,12 +284,12 @@ void delete_vehicles(vehicle_t* sample){
 }
 
 void print_vehicle(vehicle_t v){
-    printf("vehicle {id = %d, %s, %d}\n",v.id, v.is_sub ? "sub" : "not sub", v.parking_time);
+    printf("vehicle [id = %d, %s, %d]}\n",v.id, v.is_sub ? "sub" : "not sub", v.parking_time);
 }
 
 char* vehicle_to_string(vehicle_t v){
     char* buffer = malloc(sizeof(char)*256);
-    sprintf(buffer, "vehicle {id = %d, %s, %d}",v.id, v.is_sub ? "sub" : "not sub", v.parking_time);
+    sprintf(buffer, "vehicle [id = %d, %s, %d]",v.id, v.is_sub ? "sub" : "not sub", v.parking_time);
     return buffer; 
 }
 
