@@ -19,7 +19,7 @@ pthread_mutex_t mutex_sub = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_notsub = PTHREAD_MUTEX_INITIALIZER; 
 
 pthread_cond_t cond_entering = PTHREAD_COND_INITIALIZER;
-pthread_cond_t cond_leaving = PTHREAD_COND_INITIALIZER;   
+pthread_cond_t cond_leaving = PTHREAD_COND_INITIALIZER;  
 
 /*
 Usage: [-f <input_file> | -p arg1 agr2 arg3 arg4] [-v] [-h] 
@@ -34,6 +34,13 @@ int main(int argc, char* argv[])
     
     vehicle_t* vehicles = get_options(argc, argv);
 
+    for(size_t i=0; i< (n_notsub_vehicle+n_sub_vehicle); i++){
+        pthread_create(&(vehicles[i].thread), NULL, (void*) fn_vehicle, (void*) &vehicles[i]);
+    }
+
+    for(size_t i=0; i< (n_notsub_vehicle+n_sub_vehicle); i++){
+        pthread_join(vehicles[i].thread, NULL);
+    }
 
     delete_vehicles(vehicles);
 

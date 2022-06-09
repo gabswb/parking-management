@@ -56,7 +56,7 @@ vehicle_t* parse_file(char* path){
 
         //gets if is subscribed
         strtok_result = strtok(NULL, csv_token);
-        if(strcmp(strtok_result,"true")) temp[index].is_sub = true; 
+        if(strcmp(strtok_result,"true")==0) temp[index].is_sub = true; 
         else temp[index].is_sub = false; 
 
         //gets parking time

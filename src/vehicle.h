@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
+#include <time.h>
 #include "global.h"
 
 #define MIN_PARKING_TIME 5
@@ -19,6 +20,12 @@ struct vehicle
     pthread_t thread;
 };
 typedef struct vehicle vehicle_t;
+
+void fn_vehicle(void* arg);
+
+bool fn_sub_vehicle(vehicle_t* v);
+
+void fn_notsub_vehicle(vehicle_t* v);
 
 
 //return new vehicle_t with random attributes
