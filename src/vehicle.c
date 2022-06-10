@@ -17,13 +17,13 @@ bool fn_sub_vehicle(vehicle_t* vehicle){
     char* v_name = vehicle_to_string(*vehicle);
 
 
-    pthread_mutex_lock(&mutex_sub);
+    pthread_mutex_lock(&mutex_private);
     if(n_private_place < 1){//If there is no place for the sub vehicle
-        pthread_mutex_unlock(&mutex_sub);
+        pthread_mutex_unlock(&mutex_private);
         print_info("No sub place for %s\n", v_name);
         return false;
     }
-    pthread_mutex_unlock(&mutex_sub);
+    pthread_mutex_unlock(&mutex_private);
 
 
     pthread_mutex_lock(&mutex_entering);
@@ -49,14 +49,14 @@ bool fn_sub_vehicle(vehicle_t* vehicle){
 
             
     pthread_mutex_lock(&mutex_gateway);
-    pthread_mutex_lock(&mutex_sub);
+    pthread_mutex_lock(&mutex_private);
     pthread_mutex_lock(&mutex_entering);
     n_private_place--;
     n_entering--;
     n_gateway--;
     print_info("%s out of the gateway ...\n", v_name);
     pthread_mutex_unlock(&mutex_gateway);
-    pthread_mutex_unlock(&mutex_sub); 
+    pthread_mutex_unlock(&mutex_private); 
     pthread_mutex_unlock(&mutex_entering);
 
     print_info("%s is parked\n", v_name);
@@ -105,14 +105,14 @@ bool fn_sub_vehicle(vehicle_t* vehicle){
 
     pthread_mutex_lock(&mutex_gateway);
     pthread_mutex_lock(&mutex_leaving);
-    pthread_mutex_lock(&mutex_sub);
+    pthread_mutex_lock(&mutex_private);
     n_gateway--;
     n_leaving--;
     n_private_place++;
     print_info("%s out of the gateway ...\n", v_name);
     pthread_mutex_unlock(&mutex_gateway);
     pthread_mutex_unlock(&mutex_leaving);
-    pthread_mutex_unlock(&mutex_sub);
+    pthread_mutex_unlock(&mutex_private);
 
 
     print_info("%s is out\n", v_name);   
@@ -140,12 +140,12 @@ void fn_notsub_vehicle(vehicle_t* vehicle){
     char* v_name = vehicle_to_string(*vehicle);
 
 
-    pthread_mutex_lock(&mutex_sub);
+    pthread_mutex_lock(&mutex_public);
     if(n_public_place < 1){//If there is no place for the non sub vehicle
-        pthread_mutex_unlock(&mutex_sub);
+        pthread_mutex_unlock(&mutex_public);
         print_info("No non sub place for %s\n", v_name);
     }
-    pthread_mutex_unlock(&mutex_sub);
+    pthread_mutex_unlock(&mutex_public);
 
 
     pthread_mutex_lock(&mutex_entering);
@@ -171,14 +171,14 @@ void fn_notsub_vehicle(vehicle_t* vehicle){
 
             
     pthread_mutex_lock(&mutex_gateway);
-    pthread_mutex_lock(&mutex_sub);
+    pthread_mutex_lock(&mutex_public);
     pthread_mutex_lock(&mutex_entering);
     n_public_place--;
     n_entering--;
     n_gateway--;
     print_info("%s out of the gateway ...\n", v_name);
     pthread_mutex_unlock(&mutex_gateway);
-    pthread_mutex_unlock(&mutex_sub); 
+    pthread_mutex_unlock(&mutex_public); 
     pthread_mutex_unlock(&mutex_entering);
 
     print_info("%s is parked\n", v_name);
@@ -227,14 +227,14 @@ void fn_notsub_vehicle(vehicle_t* vehicle){
 
     pthread_mutex_lock(&mutex_gateway);
     pthread_mutex_lock(&mutex_leaving);
-    pthread_mutex_lock(&mutex_sub);
+    pthread_mutex_lock(&mutex_public);
     n_gateway--;
     n_leaving--;
     n_public_place++;
     print_info("%s out of the gateway ...\n", v_name);
     pthread_mutex_unlock(&mutex_gateway);
     pthread_mutex_unlock(&mutex_leaving);
-    pthread_mutex_unlock(&mutex_sub);
+    pthread_mutex_unlock(&mutex_public);
 
 
     print_info("%s is out\n", v_name);   

@@ -1,8 +1,5 @@
 #include "utils.h"
 
-
-
-
 vehicle_t* parse_file(char* path){
 
     FILE* file = fopen(path, "r");

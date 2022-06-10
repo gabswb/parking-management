@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "vehicle.h"
+#include "clock.h"
 
 #define BUFFER_SIZE 256
 #define NUM_BASE 10
