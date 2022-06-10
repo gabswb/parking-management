@@ -1,16 +1,6 @@
 #include "utils.h"
 
-bool Verbose = false;
 
-void verbose(const char* format, ...){
-    if(!Verbose) return;
-
-    va_list args;
-    va_start(args, format);
-    vprintf(format, args);
-    fflush(stdout);
-    va_end(args);
-}
 
 
 vehicle_t* parse_file(char* path){
@@ -24,13 +14,13 @@ vehicle_t* parse_file(char* path){
     vehicle_t* temp = NULL;
 
     /* 
-    gets the first line of the file (n_sub_place and n_notsub_place)
+    gets the first line of the file (n_private_place and n_public_place)
     */
     if(fgets(buffer, BUFFER_SIZE, file) == NULL) exit(EXIT_FAILURE);
     strtok_result = strtok(buffer, csv_token);
-    n_sub_place = (size_t) strtol(strtok_result, &end_ptr, NUM_BASE);
+    n_private_place = (size_t) strtol(strtok_result, &end_ptr, NUM_BASE);
     strtok_result = strtok(NULL, csv_token);
-    n_notsub_place = (size_t) strtol(strtok_result, &end_ptr, NUM_BASE);
+    n_public_place = (size_t) strtol(strtok_result, &end_ptr, NUM_BASE);
 
     /* 
     gets the second line of the file (n_sub_vehicle and n_notsub_vehicle)
@@ -64,10 +54,13 @@ vehicle_t* parse_file(char* path){
         //gets parking time
         strtok_result = strtok(NULL, csv_token);
         temp[index].parking_time = (int) strtol(strtok_result, &end_ptr, NUM_BASE);
+
+        strtok_result = strtok(NULL, csv_token);
+        temp[index].arrival_time = (int) strtol(strtok_result, &end_ptr, NUM_BASE);
         
         index++;
     }
-    if(index == n_sub_place+n_notsub_place){
+    if(index == n_private_place+n_public_place){
         fprintf(stderr, "Error : the number of vehicle given is not correct\n");
         exit(EXIT_FAILURE);
     }
@@ -104,8 +97,8 @@ vehicle_t* get_options(int argc, char* argv[]){
                 fprintf(stderr, usage_msg, argv[0]);
                 exit(EXIT_FAILURE);
             }
-            n_sub_place = (size_t) strtol(argv[i+1], NULL, NUM_BASE);
-            n_notsub_place = (size_t) strtol(argv[i+2], NULL, NUM_BASE);
+            n_private_place = (size_t) strtol(argv[i+1], NULL, NUM_BASE);
+            n_public_place = (size_t) strtol(argv[i+2], NULL, NUM_BASE);
             n_sub_vehicle = (size_t) strtol(argv[i+3], NULL, NUM_BASE);
             n_notsub_vehicle = (size_t) strtol(argv[i+4], NULL, NUM_BASE);
             temp = random_sample_vehicle(n_sub_vehicle, n_notsub_vehicle);
@@ -126,15 +119,9 @@ vehicle_t* get_options(int argc, char* argv[]){
             "Number of place for non sub : %zu\n"
             "Number of vechicle sub : %zu\n"
             "Number of vehicle non sub : %zu\n\n\n",
-            n_sub_place, n_notsub_place, n_sub_vehicle, n_notsub_vehicle);
+            n_private_place, n_public_place, n_sub_vehicle, n_notsub_vehicle);
 
     return temp;
 }
 
-void print_info(const char* format, ...){
-    va_list args;
-    va_start(args, format);
-    vprintf(format, args);
-    fflush(stdout);
-    va_end(args);
-}
+

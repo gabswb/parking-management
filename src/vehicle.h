@@ -5,17 +5,21 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <pthread.h>
-#include <time.h>
+#include <unistd.h>
+#include <stdarg.h>
 #include "global.h"
 
 #define MIN_PARKING_TIME 5
 #define MAX_PARKING_TIME 50
+#define MIN_ARRIVAL_TIME 0
+#define MAX_ARRIVAL_TIME 23
 
 struct vehicle
 {
     int id;
     bool is_sub;
     int parking_time;
+    int arrival_time;
 
     pthread_t thread;
 };
@@ -31,7 +35,7 @@ void fn_notsub_vehicle(vehicle_t* v);
 //return new vehicle_t with random attributes
 vehicle_t new_random_vehicle(int _id);
 //return new vehicle_t with attributes in parameters
-vehicle_t new_vehicle(int _id, bool _is_sub, int _parking_time);
+vehicle_t new_vehicle(int _id, bool _is_sub, int _parking_time, int _arrival_time);
 
 //return an array of random vehicules_t
 vehicle_t* random_sample_vehicle(size_t n_sub, size_t n_not_sub);
@@ -44,6 +48,12 @@ void print_vehicle(vehicle_t vehicle);
 void print_vehicles(size_t size, vehicle_t* vehicles);
 //return string containing all vehicle informations
 char* vehicle_to_string(vehicle_t vehicle);
+
+extern bool Verbose;
+
+void verbose(const char* format, ...);
+
+void print_info(const char* format, ...);
 
 //return random integer
 int random_int(int min, int max);

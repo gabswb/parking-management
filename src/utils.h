@@ -5,17 +5,10 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <stdarg.h>
 #include "vehicle.h"
 
 #define BUFFER_SIZE 256
 #define NUM_BASE 10
-
-extern bool Verbose;
-
-void verbose(const char* format, ...);
-
-void print_info(const char* format, ...);
 
 //parse csv file passed in command line
 vehicle_t* parse_file(char* path);
