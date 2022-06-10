@@ -68,8 +68,8 @@ cond_leaving;
 n_gateway = 0;
 n_entering = 0;
 n_leaving = 0;
-n_sub_place = 10;
-n_notsub_place = 20;
+n_private_place = 10;
+n_public_place = 20;
 
 mutex_gateway;
 mutex_entering;
@@ -82,7 +82,7 @@ void fn_car()
     if(abonné)
     {
         lock(mutex_sub);
-        if(n_sub_place > 0)
+        if(n_private_place > 0)
         {
             unlock(mutex_sub);
 
@@ -103,7 +103,7 @@ void fn_car()
             unlock(mutex_gateway);
 
             lock(mutex_sub);
-            n_sub_place--;
+            n_private_place--;
             unlock(mutex_sub);
 
             lock(mutex_entering);
@@ -152,7 +152,7 @@ void fn_car()
             unlock(mutex_leaving);
 
             lock(mutex_sub);
-            n_sub_place++;
+            n_private_place++;
             unlock(mutex_sub);
 
             lock(mutex_leaving);
@@ -180,7 +180,7 @@ void fn_car()
     //places non abonnées
 
     lock(mutex_notsub);
-    if(n_notsub_place > 0)
+    if(n_public_place > 0)
     {
         unlock(mutex_notsub);
 
@@ -201,7 +201,7 @@ void fn_car()
         unlock(mutex_gateway);
 
         lock(mutex_notsub);
-        n_notsub_place--;
+        n_public_place--;
         unlock(mutex_notsub);
 
         lock(mutex_entering);
@@ -249,7 +249,7 @@ void fn_car()
         unlock(mutex_leaving);
 
         lock(mutex_not_sub);
-        n_notsub_place++;
+        n_public_place++;
         unlock(mutex_notsub);
 
         lock(mutex_leaving);

@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include "utils.h"
 
-size_t n_sub_place = 10;    
-size_t n_notsub_place = 20;
+size_t n_private_place = 10;    
+size_t n_public_place = 20;
 
 size_t n_sub_vehicle = 12;
 size_t n_notsub_vehicle = 23;
