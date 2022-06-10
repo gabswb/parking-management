@@ -23,7 +23,12 @@ set(HEADER_FILES
 
 #set (CMAKE_CXX_STANDARD 11)
 
-add_compile_options(-Wall -Wextra -Wfloat-equal -Wundef -ggdb3)
+#cmake -DCMAKE_BUILD_TYPE=Release ..
+
+set(CMAKE_CXX_FLAGS_DEBUG_INIT "-Wall -Wextra -Wfloat-equal -Wundef -g")
+set(CMAKE_CXX_FLAGS_RELEASE_INIT "-Wall -Wextra -Wfloat-equal -Wundef")
+
+#add_compile_options(-Wall -Wextra -Wfloat-equal -Wundef -ggdb3)
 
 add_executable(parking-management src/main.c ${SRC_FILES} ${HEADER_FILES})
 
