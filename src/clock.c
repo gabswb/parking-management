@@ -29,5 +29,6 @@ void fn_clock(void* _end_vehicle){
             pthread_mutex_unlock(&mutex_public);
         }
     }
+    printf("\nNO MORE VEHICLE\n");
 
 }

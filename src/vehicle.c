@@ -77,7 +77,7 @@ bool fn_sub_vehicle(vehicle_t* vehicle){
 
 
     //--------------------------------
-    sleep(5); // stay park ...
+    sleep(vehicle->parking_time); // stay park ...
     //--------------------------------
 
     print_info("%s wants to leave in the parking\n", v_name);
@@ -199,7 +199,7 @@ void fn_notsub_vehicle(vehicle_t* vehicle){
 
 
     //--------------------------------
-    sleep(5); // stay park ...
+    sleep(vehicle->parking_time); // stay park ...
     //--------------------------------
 
     print_info("%s wants to leave in the parking\n", v_name);
