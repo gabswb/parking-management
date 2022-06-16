@@ -12,10 +12,10 @@ void fn_clock(void* _end_vehicle){
     bool* end_vehicle = (bool*) _end_vehicle;
 
     while(!*end_vehicle){
-        sleep(3);
-        clock_time = (clock_time+1)%24;
+        sleep(3);//3 seconds is equivalent to 1 hour
+        clock_time = (clock_time+1)%24;//one day has 24 hours
         printf("%dH\n", clock_time);
-        if(clock_time > RELEASE_TIME && clock_time < RELEASE_TIME+RELEASE_PERIOD){
+        if(clock_time > RELEASE_TIME && clock_time < RELEASE_TIME+RELEASE_PERIOD){//if this is realease time, we release some public place
             pthread_mutex_lock(&mutex_public);
 
             size_t n_bonus_places = (size_t) (n_initial_public_place * OVERFLOW_PERCENTAGE)/RELEASE_PERIOD;
@@ -24,7 +24,7 @@ void fn_clock(void* _end_vehicle){
 
             pthread_mutex_unlock(&mutex_public);
         }
-        if(clock_time >= RELEASE_TIME+RELEASE_PERIOD){
+        if(clock_time >= RELEASE_TIME+RELEASE_PERIOD){//at the end of the realease period, we get back the released places
             pthread_mutex_lock(&mutex_public);
 
             if(n_public_place >= n_initial_public_place*(1-OVERFLOW_PERCENTAGE)){

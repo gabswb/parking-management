@@ -1,59 +1,44 @@
 #include "vehicle.h"
 
-void fn_vehicle(void* arg){
-
+void fn_vehicle(void* arg)
+{
     vehicle_t vehicle = *(vehicle_t*) arg;
-    sleep(vehicle.arrival_time);
+    sleep(vehicle.arrival_time); //sleep to simulate the arrival time   
+    char* v_name = vehicle_to_string(vehicle);
 
     if(vehicle.is_sub){
-        if(!fn_sub_vehicle(&vehicle))
-        fn_notsub_vehicle(&vehicle);//the sub vehicle can also park in the not sub places
-    } 
-    else
-        fn_notsub_vehicle(&vehicle);
-}
+        pthread_mutex_lock(&mutex_private);
+        if(n_private_place > 0){
+            pthread_mutex_unlock(&mutex_private);
 
-bool fn_sub_vehicle(vehicle_t* vehicle){
-    char* v_name = vehicle_to_string(*vehicle);
-
-    pthread_mutex_lock(&mutex_private);
-    if(n_private_place < 1){//If there is no place for the sub vehicle
+            enter_parking(&vehicle, true);
+            sleep(vehicle.parking_time);//start parked ...
+            leave_parking(&vehicle, true);
+            
+            free(v_name);
+            return;//if the sub vehicle could find a place, no need to continue function
+        }
+        print_info("No place available for %s\n", v_name);
         pthread_mutex_unlock(&mutex_private);
-        print_info("No sub place for %s\n", v_name);
-        return false;
     }
-    pthread_mutex_unlock(&mutex_private);
-
-
-    enter_parking(vehicle);
-    sleep(vehicle->parking_time); // stay park ...
-    leave_parking(vehicle);
-    
-
-    free(v_name);
-    return true;
-}
-
-void fn_notsub_vehicle(vehicle_t* vehicle){
-    char* v_name = vehicle_to_string(*vehicle);
 
     pthread_mutex_lock(&mutex_public);
-    if(n_public_place < 1){//If there is no place for the non sub vehicle
+    if(n_public_place > 0){
         pthread_mutex_unlock(&mutex_public);
-        print_info("No non sub place for %s\n", v_name);
+        enter_parking(&vehicle, true);
+        sleep(vehicle.parking_time); // stay parked ...
+        leave_parking(&vehicle, true);
     }
-    pthread_mutex_unlock(&mutex_public);
-
-
-    enter_parking(vehicle);
-    sleep(vehicle->parking_time); // stay park ...
-    leave_parking(vehicle);
- 
+    else{
+        pthread_mutex_unlock(&mutex_public);
+        print_info("No place available for %s\n", v_name);
+    }
 
     free(v_name);
 }
 
-void enter_parking(vehicle_t* vehicle){
+
+void enter_parking(vehicle_t* vehicle, bool private_place){
 
     char* v_name = vehicle_to_string(*vehicle);
 
@@ -79,7 +64,7 @@ void enter_parking(vehicle_t* vehicle){
     //-----------------------------------------------
 
 
-    if(vehicle->is_sub){
+    if(private_place){
         pthread_mutex_lock(&mutex_private);
         n_private_place--;
         pthread_mutex_unlock(&mutex_private);
@@ -117,7 +102,7 @@ void enter_parking(vehicle_t* vehicle){
 }
 
 
-void leave_parking(vehicle_t* vehicle){
+void leave_parking(vehicle_t* vehicle, bool private_place){
 
     char* v_name = vehicle_to_string(*vehicle);
 
@@ -144,14 +129,14 @@ void leave_parking(vehicle_t* vehicle){
     //-----------------------------------------------
 
 
-    if(vehicle->is_sub){
+    if(private_place){
         pthread_mutex_lock(&mutex_private);
-        n_private_place--;
+        n_private_place++;
         pthread_mutex_unlock(&mutex_private);
     }
     else{
         pthread_mutex_lock(&mutex_public);
-        n_public_place--;
+        n_public_place++;
         pthread_mutex_unlock(&mutex_public);
     }
     pthread_mutex_lock(&mutex_gateway);

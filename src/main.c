@@ -4,7 +4,7 @@
 #include "clock.h"
 
 size_t n_private_place = 10;    
-size_t n_public_place = 50;
+size_t n_public_place = 20;
 
 size_t n_sub_vehicle = 12;
 size_t n_notsub_vehicle = 23;
@@ -23,7 +23,7 @@ pthread_cond_t cond_entering = PTHREAD_COND_INITIALIZER;
 pthread_cond_t cond_leaving = PTHREAD_COND_INITIALIZER;  
 
 /*
-Usage: [-f <input_file> | -p arg1 agr2 arg3 arg4] [-v] [-h] 
+Usage: ./parking-management [-f <input_file> | -p arg1 agr2 arg3 arg4] [-v] [-h] 
 
     [-f] <input_file>           ,run program with the data in the specified .txt file
     [-p] arg1 arg2 arg3 arg4    ,arg1 : nb of subscribed vehicules, arg2 : nb of not subscribed vehicules, arg3 : nb of places for subscriber, arg4 : nb of places for non-subsriber
@@ -38,10 +38,10 @@ int main(int argc, char* argv[])
     srand(time(NULL));
     bool end_vehicle = false;
     
-    pthread_create(&clock_thread, NULL, (void*) fn_clock, (void*) &end_vehicle);
+    pthread_create(&clock_thread, NULL, (void*) fn_clock, (void*) &end_vehicle);//start clock thread first
 
     for(size_t i=0; i< (n_notsub_vehicle+n_sub_vehicle); i++){
-        pthread_create(&(vehicles[i].thread), NULL, (void*) fn_vehicle, (void*) &vehicles[i]);
+        pthread_create(&(vehicles[i].thread), NULL, (void*) fn_vehicle, (void*) &vehicles[i]);//start all vehicle threads
     }
 
     for(size_t i=0; i< (n_notsub_vehicle+n_sub_vehicle); i++){
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
     }
 
     end_vehicle = true;
-    pthread_join(clock_thread, NULL);
+    pthread_join(clock_thread, NULL);//join clock thread last
 
     delete_vehicles(vehicles);
 

@@ -10,6 +10,7 @@
 #define RELEASE_PERIOD 4//this period start at RELEASE_TIME, each hour during this period some blocked place will be made available
 #define OVERFLOW_PERCENTAGE 0.2 //20% of the public places will be reserved before the RELEASE_TIME
 
+//clock function which simulate the passage of time
 void fn_clock(void* arg);
 
 #endif // CLOCK_H
