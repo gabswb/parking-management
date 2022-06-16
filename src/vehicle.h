@@ -28,9 +28,9 @@ typedef struct vehicle vehicle_t;
 void fn_vehicle(void* arg);
 
 bool fn_sub_vehicle(vehicle_t* v);
-
 void fn_notsub_vehicle(vehicle_t* v);
-
+void enter_parking(vehicle_t* v);
+void leave_parking(vehicle_t* v);
 
 //return new vehicle_t with random attributes
 vehicle_t new_random_vehicle(int _id);

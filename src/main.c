@@ -4,7 +4,7 @@
 #include "clock.h"
 
 size_t n_private_place = 10;    
-size_t n_public_place = 20;
+size_t n_public_place = 50;
 
 size_t n_sub_vehicle = 12;
 size_t n_notsub_vehicle = 23;
@@ -35,6 +35,7 @@ int main(int argc, char* argv[])
     
     vehicle_t* vehicles = get_options(argc, argv);
     pthread_t clock_thread;
+    srand(time(NULL));
     bool end_vehicle = false;
     
     pthread_create(&clock_thread, NULL, (void*) fn_clock, (void*) &end_vehicle);
