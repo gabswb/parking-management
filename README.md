@@ -1,15 +1,18 @@
 # parking-management
-Simulation of a parking management 
+Simulation of a parking management using multithreading and synchronization for unix system
 
-## Compilation 
-Pour compiler le programme avec le makefile :
+## Build
+First, grab the source code :
 ```zsh
-$ make
+git clone https://github.com/gabswb/parking-management.git
+cd parking-management
 ```
-L'exectuable sera créer dans un dossier build
-
-## Utilisation 
-Après avoir compiler :
+Then compile using the Makefile :
+```zsh
+make
+```
+## Usage 
+To run the program :
 ```zsh
 cd build
 ./parking-management [options]
@@ -23,14 +26,4 @@ Usage : ./parking-management [-f <input_file> | -p arg1 agr2 arg3 arg4] [-v] [-h
     [-v]                        ,verbose mode
     [-h]                        ,help message
 ```
-Exemple d'utilisation du programme : 
-```bash
-./parking-management -f ../sample/sample1.csv -v
-```
-Attention ! Comme spécifié au dessus, les options ```-p``` et ```-f``` ne sont pas compatibles.
-
-- Si vous lancez le programme sans options, les paramètres par défaults seront utilisé : 
-    - 10 places privées
-    - 20 places publiques
-    - 12 véhicules abonnés avec des attributs aléatoires
-    - 23 véhicules non abonnés avec des attributs aléatoires
+If you run without options, the default parameters will be used.
