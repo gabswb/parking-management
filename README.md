@@ -20,9 +20,9 @@ cd build
 ```zsh
 Usage : ./parking-management [-f <input_file> | -p arg1 agr2 arg3 arg4] [-v] [-h] 
 
-    [-f] <input_file>           ,lance le programme avec les données dans le fichier .csv passé en paramètre
-    [-p] arg1 arg2 arg3 arg4    ,arg1 : nb de véhicules abonnés, arg2 : nb de véhicules non abonnés,  
-                                ,arg3 : nb de places privées, arg4 : nb de places publiques
+    [-f] <input_file>           ,run program with data in the specified .csv file in parameter
+    [-p] arg1 arg2 arg3 arg4    ,arg1 : nb of sub vehicle, arg2 : nb of non sub vehicle  
+                                ,arg3 : nb of private places, arg4 : nb of public places
     [-v]                        ,verbose mode
     [-h]                        ,help message
 ```
